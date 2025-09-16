@@ -7,7 +7,7 @@ This is an Android GUI for [WireGuard](https://www.wireguard.com/). It [opportun
 ## Building
 
 ```
-$ git clone --recurse-submodules https://git.zx2c4.com/wireguard-android
+$ git clone --recurse-submodules https://https://github.com/ChunghanYi/wireguard-android
 $ cd wireguard-android
 $ ./gradlew assembleRelease
 ```
@@ -38,3 +38,7 @@ dependencies {
 ## Translating
 
 Please help us translate the app into several languages on [our translation platform](https://crowdin.com/project/WireGuard).
+
+## Auto Connect 
+
+If you are interested in the wireguard AutoConnect feature, please see [this site](https://slowbootkernelhacks.blogspot.com/2025/09/wireguard-android-application-analysis.html).
