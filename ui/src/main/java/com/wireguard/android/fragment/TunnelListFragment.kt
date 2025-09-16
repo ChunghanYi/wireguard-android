@@ -29,6 +29,9 @@ import com.journeyapps.barcodescanner.ScanOptions
 import com.wireguard.android.Application
 import com.wireguard.android.R
 import com.wireguard.android.activity.TunnelCreatorActivity
+// AutoConnect --
+import com.wireguard.android.activity.TunnelACActivity
+// -- -- --
 import com.wireguard.android.databinding.ObservableKeyedRecyclerViewAdapter.RowConfigurationHandler
 import com.wireguard.android.databinding.TunnelListFragmentBinding
 import com.wireguard.android.databinding.TunnelListItemBinding
@@ -109,6 +112,12 @@ class TunnelListFragment : BaseFragment() {
                         AddTunnelsSheet.REQUEST_CREATE -> {
                             startActivity(Intent(requireActivity(), TunnelCreatorActivity::class.java))
                         }
+
+                        // AutoConnect --
+                        AddTunnelsSheet.REQUEST_AC -> {
+                            startActivity(Intent(requireActivity(), TunnelACActivity::class.java))
+                        }
+                        // -- -- --
 
                         AddTunnelsSheet.REQUEST_IMPORT -> {
                             tunnelFileImportResultLauncher.launch("*/*")

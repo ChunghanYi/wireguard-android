@@ -21,12 +21,18 @@ import com.wireguard.config.InetNetwork;
 import com.wireguard.config.Peer;
 import com.wireguard.crypto.Key;
 import com.wireguard.crypto.KeyFormatException;
+import com.wireguard.crypto.KeyPair;
 import com.wireguard.util.NonNullForAll;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -82,6 +88,12 @@ public final class GoBackend implements Backend {
     private static native int wgTurnOn(String ifName, int tunFd, String settings);
 
     private static native String wgVersion();
+
+	// AutoConnect --
+    private static native String acTurnOn(String serverIp, String Port, String priKey, String pubKey);
+
+    private static native int acTurnOff(String serverIp, String Port, String pubKey);
+	// -- -- --
 
     /**
      * Method to get the names of running tunnels.
@@ -223,6 +235,33 @@ public final class GoBackend implements Backend {
         }
         return getState(tunnel);
     }
+
+	// AutoConnect --
+    private String acOldPublicKey;
+    @Override
+    public Config setAC(String serverIp, String Port, State state) throws Exception {
+		if (state == State.UP) {
+            String uniqueID = UUID.randomUUID().toString();  //TBD - it will be used instead mac address
+
+            //Let's generate a curve25519 keypair
+            KeyPair kp = new KeyPair();
+            acOldPublicKey = kp.getPublicKey().toBase64();
+
+            String settings = acTurnOn(serverIp.trim(), Port.trim(), kp.getPrivateKey().toBase64(), kp.getPublicKey().toBase64());
+            if (settings == null) {
+                return null;
+			} else {
+                InputStream input = new ByteArrayInputStream(settings.getBytes(StandardCharsets.UTF_8));
+                return Config.parse(input);
+            }
+        } else if (state == State.DOWN) {
+            int result = acTurnOff(serverIp, Port, acOldPublicKey);
+            return null;
+        } else {
+            return null;
+        }
+	}
+	// -- -- --
 
     private void setStateInternal(final Tunnel tunnel, @Nullable final Config config, final State state)
             throws Exception {

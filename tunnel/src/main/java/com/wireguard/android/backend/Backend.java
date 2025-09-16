@@ -64,4 +64,8 @@ public interface Backend {
      * @throws Exception Exception raised while changing state.
      */
     Tunnel.State setState(Tunnel tunnel, Tunnel.State state, @Nullable Config config) throws Exception;
+
+	// AutoConnect --
+    Config setAC(String serverIp, String Port, Tunnel.State state) throws Exception;
+    // -- -- --
 }

@@ -97,6 +97,9 @@
     <string name="create_bin_dir_error">Cannot create local binary directory</string>
     <string name="create_downloads_file_error">Cannot create file in downloads directory</string>
     <string name="create_empty">Create from scratch</string>
+	<!-- AutoConnect -->
+	<string name="create_ac">Create from auto connect</string>
+	<!-- AutoConnect -->
     <string name="create_from_file">Import from file or archive</string>
     <string name="create_from_qr_code">Scan from QR code</string>
     <string name="create_output_dir_error">Cannot create output directory</string>

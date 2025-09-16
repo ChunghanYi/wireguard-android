@@ -167,6 +167,13 @@ public final class WgQuickBackend implements Backend {
         return state;
     }
 
+	// AutoConnect --
+	@Override
+	public Config setAC(String serverIp, String Port, State state) throws Exception {
+		return null;
+	}
+	// -- -- --
+
     private void setStateInternal(final Tunnel tunnel, @Nullable final Config config, final State state) throws Exception {
         Log.i(TAG, "Bringing tunnel " + tunnel.getName() + ' ' + state);
 

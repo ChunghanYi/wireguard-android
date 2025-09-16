@@ -61,6 +61,12 @@ class AddTunnelsSheet : BottomSheetDialogFragment() {
                     dismiss()
                     onRequestCreateConfig()
                 }
+                // AutoConnect --
+                dialog.findViewById<View>(R.id.create_ac)?.setOnClickListener {
+                    dismiss()
+                    onRequestACConfig()
+                }
+                // -- -- --
                 dialog.findViewById<View>(R.id.create_from_file)?.setOnClickListener {
                     dismiss()
                     onRequestImportConfig()
@@ -86,6 +92,12 @@ class AddTunnelsSheet : BottomSheetDialogFragment() {
         setFragmentResult(REQUEST_KEY_NEW_TUNNEL, bundleOf(REQUEST_METHOD to REQUEST_CREATE))
     }
 
+    // AutoConnect --
+    private fun onRequestACConfig() {
+        setFragmentResult(REQUEST_KEY_NEW_TUNNEL, bundleOf(REQUEST_METHOD to REQUEST_AC))
+    }
+    // -- -- --
+
     private fun onRequestImportConfig() {
         setFragmentResult(REQUEST_KEY_NEW_TUNNEL, bundleOf(REQUEST_METHOD to REQUEST_IMPORT))
     }
@@ -98,6 +110,9 @@ class AddTunnelsSheet : BottomSheetDialogFragment() {
         const val REQUEST_KEY_NEW_TUNNEL = "request_new_tunnel"
         const val REQUEST_METHOD = "request_method"
         const val REQUEST_CREATE = "request_create"
+        // AutoConnect --
+        const val REQUEST_AC = "request_ac"
+        // -- -- --
         const val REQUEST_IMPORT = "request_import"
         const val REQUEST_SCAN = "request_scan"
     }

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright © 2025 Slowboot(chunghan.yi@gmail.com). All Rights Reserved.
+  ~ SPDX-License-Identifier: Apache-2.0
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:padding="16dp"
+    tools:context=".fragment.TunnelACFragment">
+
+	<TextView
+		android:id="@+id/acInterface"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=" wg0 "
+        android:textSize="18sp"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/acServerIp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Server IP Address(ex: 192.168.8.235)"
+        android:inputType="text"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/acServerPort"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Server Port(ex: 51822)"
+        android:inputType="text"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/acStartButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Auto Connect 시작"
+        android:layout_gravity="center_horizontal"/>
+
+</LinearLayout>

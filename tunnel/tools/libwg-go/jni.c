@@ -14,6 +14,12 @@ extern int wgGetSocketV4(int handle);
 extern int wgGetSocketV6(int handle);
 extern char *wgGetConfig(int handle);
 extern char *wgVersion();
+// AutoConnect --
+extern char *acTurnOn(struct go_string serverip, struct go_string port,
+		struct go_string privatekey, struct go_string publickey);
+extern int acTurnOff(struct go_string serverip, struct go_string port,
+		struct go_string publickey);
+// -- -- --
 
 JNIEXPORT jint JNICALL Java_com_wireguard_android_backend_GoBackend_wgTurnOn(JNIEnv *env, jclass c, jstring ifname, jint tun_fd, jstring settings)
 {
@@ -69,3 +75,84 @@ JNIEXPORT jstring JNICALL Java_com_wireguard_android_backend_GoBackend_wgVersion
 	free(version);
 	return ret;
 }
+
+// AutoConnect --
+JNIEXPORT jstring JNICALL Java_com_wireguard_android_backend_GoBackend_acTurnOn(JNIEnv *env, jclass c,
+		jstring serverip, jstring port, jstring privatekey, jstring publickey)
+{
+	const char *serverip_str = (*env)->GetStringUTFChars(env, serverip, 0);
+	size_t serverip_len = (*env)->GetStringUTFLength(env, serverip);
+	const char *port_str = (*env)->GetStringUTFChars(env, port, 0);
+	size_t port_len = (*env)->GetStringUTFLength(env, port);
+	const char *privatekey_str = (*env)->GetStringUTFChars(env, privatekey, 0);
+	size_t privatekey_len = (*env)->GetStringUTFLength(env, privatekey);
+	const char *publickey_str = (*env)->GetStringUTFChars(env, publickey, 0);
+	size_t publickey_len = (*env)->GetStringUTFLength(env, publickey);
+
+	char *config = acTurnOn(
+		(struct go_string){
+			.str = serverip_str,
+			.n = serverip_len
+		},
+		(struct go_string){
+			.str = port_str,
+			.n = port_len
+		},
+		(struct go_string){
+			.str = privatekey_str,
+			.n = privatekey_len
+		},
+		(struct go_string){
+			.str = publickey_str,
+			.n = publickey_len
+		});
+
+	if (!config) {
+		(*env)->ReleaseStringUTFChars(env, serverip, serverip_str);
+		(*env)->ReleaseStringUTFChars(env, port, port_str);
+		(*env)->ReleaseStringUTFChars(env, privatekey, privatekey_str);
+		(*env)->ReleaseStringUTFChars(env, publickey, publickey_str);
+		return NULL;
+	} else {
+		jstring ret = (*env)->NewStringUTF(env, config);
+		free(config);
+
+		(*env)->ReleaseStringUTFChars(env, serverip, serverip_str);
+		(*env)->ReleaseStringUTFChars(env, port, port_str);
+		(*env)->ReleaseStringUTFChars(env, privatekey, privatekey_str);
+		(*env)->ReleaseStringUTFChars(env, publickey, publickey_str);
+		return ret;
+	}
+}
+
+JNIEXPORT jint JNICALL Java_com_wireguard_android_backend_GoBackend_acTurnOff(JNIEnv *env, jclass c,
+		jstring serverip, jstring port, jstring publickey)
+{
+	const char *serverip_str = (*env)->GetStringUTFChars(env, serverip, 0);
+	size_t serverip_len = (*env)->GetStringUTFLength(env, serverip);
+	const char *port_str = (*env)->GetStringUTFChars(env, port, 0);
+	size_t port_len = (*env)->GetStringUTFLength(env, port);
+	const char *publickey_str = (*env)->GetStringUTFChars(env, publickey, 0);
+	size_t publickey_len = (*env)->GetStringUTFLength(env, publickey);
+
+	int ret = acTurnOff(
+		(struct go_string){
+			.str = serverip_str,
+			.n = serverip_len
+		},
+		(struct go_string){
+			.str = port_str,
+			.n = port_len
+		},
+		(struct go_string){
+			.str = publickey_str,
+			.n = publickey_len
+		});
+
+	(*env)->ReleaseStringUTFChars(env, serverip, serverip_str);
+	(*env)->ReleaseStringUTFChars(env, port, port_str);
+	(*env)->ReleaseStringUTFChars(env, publickey, publickey_str);
+
+	return ret;
+}
+// -- -- --
