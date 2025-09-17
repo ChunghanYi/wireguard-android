@@ -1,0 +1,46 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Copyright © 2017-2025 WireGuard LLC. All Rights Reserved.
+BUILDDIR ?= $(CURDIR)/build
+DESTDIR ?= $(CURDIR)/out
+
+NDK_GO_ARCH_MAP_x86 := 386
+NDK_GO_ARCH_MAP_x86_64 := amd64
+NDK_GO_ARCH_MAP_arm := arm
+NDK_GO_ARCH_MAP_arm64 := arm64
+NDK_GO_ARCH_MAP_mips := mipsx
+NDK_GO_ARCH_MAP_mips64 := mips64x
+
+comma := ,
+CLANG_FLAGS := --target=$(ANDROID_LLVM_TRIPLE) --gcc-toolchain=$(ANDROID_TOOLCHAIN_ROOT) --sysroot=$(ANDROID_SYSROOT)
+export CGO_CFLAGS := $(CLANG_FLAGS) $(subst -mthumb,-marm,$(CFLAGS))
+export CGO_LDFLAGS := $(CLANG_FLAGS) $(patsubst -Wl$(comma)--build-id=%,-Wl$(comma)--build-id=none,$(LDFLAGS)) -Wl,-soname=libwg-go.so
+export CC := $(ANDROID_C_COMPILER)
+export GOARCH := $(NDK_GO_ARCH_MAP_$(ANDROID_ARCH_NAME))
+export GOOS := android
+export CGO_ENABLED := 1
+
+default: $(DESTDIR)/libwg-go.so
+
+#FIXME this path with your own
+GIT_BIN_PATH := "C:\Program Files\Git\usr\bin"
+UNZIP_PATH := $(GIT_BIN_PATH)\unzip.exe
+PATCH_PATH := $(GIT_BIN_PATH)\patch.exe
+TOUCH_PATH := $(GIT_BIN_PATH)\touch.exe
+# -- -- --
+
+DESIRED_GO_VERSION := 1.24.3
+$(BUILDDIR)/go-$(DESIRED_GO_VERSION)/.prepared:
+	if not exist "$(dir $@)" mkdir "$(dir $@)"
+	curl -o "$(BUILDDIR)\go-$(DESIRED_GO_VERSION)\gofile.zip" "https://dl.google.com/go/go$(DESIRED_GO_VERSION).windows-amd64.zip"
+	$(UNZIP_PATH) -o "$(BUILDDIR)\go-$(DESIRED_GO_VERSION)\gofile.zip" -d "$(dir $@)"
+	del /f "$(BUILDDIR)\go-$(DESIRED_GO_VERSION)\gofile.zip"
+
+	$(PATCH_PATH) -p1 -f -N -r- -d "$(dir $@)go/" < goruntime-boottime-over-monotonic.diff
+	$(TOUCH_PATH) "$@"
+
+$(DESTDIR)/libwg-go.so: export PATH := $(BUILDDIR)/go-$(DESIRED_GO_VERSION)/go/bin/:$(PATH)
+$(DESTDIR)/libwg-go.so: $(BUILDDIR)/go-$(DESIRED_GO_VERSION)/.prepared go.mod
+	go build -tags linux -ldflags="-X golang.zx2c4.com/wireguard/ipc.socketDirectory=/data/data/$(ANDROID_PACKAGE_NAME)/cache/wireguard -buildid=" -v -trimpath -buildvcs=false -o "$@" -buildmode c-shared
+
+.DELETE_ON_ERROR:

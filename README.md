@@ -9,7 +9,29 @@ This is an Android GUI for [WireGuard](https://www.wireguard.com/). It [opportun
 ```
 $ git clone --recurse-submodules https://https://github.com/ChunghanYi/wireguard-android
 $ cd wireguard-android
+
+<Linux or macOS>
 $ ./gradlew assembleRelease
+
+<Windows>
+$ cp tunnel/tools/CMakeLists.txt tunnel/tools/CMakeLists.txt.ORIG
+$ cp tunnel/tools/libwg-go/Makefile tunnel/tools/libwg-go/Makefile.ORIG
+$ cp tunnel/tools/CMakeLists.txt.win tunnel/tools/CMakeLists.txt
+$ cp tunnel/tools/libwg-go/Makefile.win tunnel/tools/libwg-go/Makefile
+
+$ vi tunnel/tools/CMakeLists.txt
+#FIXME this path with your own
+set(MAKE_PATH "C:/Users/<USERID>/AppData/Local/Android/Sdk/ndk/29.0.14033849/prebuilt/windows-x86_64/bin/make.exe")
+...
+~
+
+$ vi tunnel/tools/libwg-go/Makefile
+#FIXME this path with your own
+GIT_BIN_PATH := "C:\Program Files\Git\usr\bin"
+...
+~
+
+After that, you can proceed with a full build using Android Studio.
 ```
 
 macOS users may need [flock(1)](https://github.com/discoteq/flock).
